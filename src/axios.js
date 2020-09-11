@@ -50,8 +50,6 @@ instance.interceptors.response.use(
             common.setCookie('token', response.headers.authorization)
         }
         
-        //response.headers.authorizations && common.setCookie('stoken', response.headers.authorizations)
-        
         //解密
         if(process.env.NODE_ENV == 'production')
             response.data.data = crypto.decrypt(response.data.data)
