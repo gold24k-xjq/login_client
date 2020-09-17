@@ -229,8 +229,19 @@ export default {
             this.usergroup_id = users.usergroup_id
             this.qrcode = users.qrcode
         }
-        this.getReports()
-        this.getSubjects()
+        
+    },
+    activated() {
+        if (!this.$route.meta.isBack) {
+            this.getReports()
+            this.getSubjects()
+        }
+        this.$route.meta.isBack = false
+    },
+    beforeRouteEnter (to, from, next) {
+        if (from.name == 'CheckReport' || from.name == 'CheckQuestions')
+            to.meta.isBack = true
+        next()
     },
     watch: {
         from() {

@@ -20,6 +20,8 @@ const routes = [
         name: 'CheckList',
         meta: {
             index: 1,
+            keepAlive: true,
+            isBack : false,
         },
         component: () => import('../views/Evaluation/CheckList.vue')
     },

@@ -1254,8 +1254,10 @@ button {
     position: absolute;
     width: 15px;
     height: 15px;
-    top: -2px;
-    left: 2px;
+    /* top: -2px;
+    left: 2px; */
+	top: -16px;
+	left: 4px;
     -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
     overflow: hidden;
@@ -1423,7 +1425,7 @@ button {
 }
 .cr_pro i{
 	position: absolute;
-	top: 0;
+	top:5px;
 	left: 0;
 	width: 100%;
 	text-align: center;
@@ -2674,4 +2676,19 @@ width:600px;
 i,sub,sup{
 	/*font-family: MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw,MJXc-TeX-main-R,MJXc-TeX-main-Rw;*/
 	font-family: MJXZERO, MJXTEX-I;
+}
+.level_f{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.level_f::before{
+	top: 11px;
+}
+.level_btn{
+	background-color: transparent;
+	border: 1px solid #1aa97b;
+	border-radius: 4px;
+	color: #1aa97b;
+	padding: 7px 1.25rem;
 }

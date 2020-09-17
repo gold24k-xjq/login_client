@@ -2,7 +2,7 @@
 <!-- START -->
 <div class="cr_lr fr">
     <div class="cr_bg">
-        <div class="cr_tit">总览</div>
+        <div class="cr_tit level_f">总览<button class="level_btn" @click="simpleReport">导出报告<i class="cr_bgtiti"></i></button></div>
         <ul class="cr_lrlist">
             <li>
                 <p>平均正确率</p>
@@ -69,6 +69,8 @@ export default {
     created() {
         let practice_id = this.$route.query.practice_id
         let grade_id = this.$route.query.grade_id
+        this.practice_id = practice_id
+        this.grade_id = grade_id
         this.getReport(practice_id, grade_id)
     },
     methods: {
@@ -90,6 +92,10 @@ export default {
                     this.chart2(data1, data2)
                 })
             }).catch(res=>{})
+        },
+        simpleReport() {
+            let data = {grade_id: this.grade_id, practice_id: this.practice_id, from: 8}
+            this.$func.getPdf(data)
         },
         showTips() {
             this.tip_index = layer.tips('A等级: 正确率≥90%<br>B等级: 正确率≥80%<br>C等级: 正确率≥60%<br>D等级: 正确率<60%', '#showt', {time: 0})
