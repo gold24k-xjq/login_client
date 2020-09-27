@@ -122,6 +122,7 @@ export default {
             let data = {
                 knowledge_id: item.knowledge_id,
                 knowledge: item.knowledge,
+                textbook_id: item.textbook_id,
                 subject_id: this.subject_id,
                 uid: this.uid,
                 username: this.username,
@@ -139,6 +140,7 @@ export default {
             let data = {
                 knowledge_id: item.knowledge_id,
                 knowledge: item.knowledge,
+                textbook_id: item.textbook_id,
                 subject_id: this.subject_id,
                 uid: this.uid,
                 username: this.username,

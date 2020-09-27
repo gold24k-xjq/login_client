@@ -74,6 +74,14 @@ export default {
         QuestionInfo,
         Knowledges,
     },
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+            if (from.name == 'CheckList')
+                vm.$store.commit("SETEVOSTATUS", 2)
+            else if (from.name == 'Online' || from.name == 'SubPaper')
+                vm.$store.commit("SETEVOSTATUS", 1)
+        })
+    },
     methods: {
         getRport(id) {
 

@@ -117,12 +117,11 @@
             </select>
             <i class="pu_i" style="right: 16%;top: 17px;"></i>
         </div>
-        <div class="pop_ul" v-show="pharse_id == 2">
-            <label>出题范围</label>
-            <select class="pop_ulipt pop_ulipts" v-model="item">
-                <option value="1">上学期</option>
-                <option value="2">下学期</option>
-                <option value="0">全一册</option>
+        <div class="pop_ul">
+            <label>教材</label>
+            <select id="textbook_id" class="pop_ulipt pop_ulipts" v-model="textbook_id">
+                <option value="">请选择</option>
+                <option :value="item.textbook_id" v-for="item in books" v-show="item.year_id == year_id && item.subject_id == subject_id">{{item.textbook_name}}</option>
             </select>
             <i class="pu_i" style="right: 16%;top: 17px;"></i>
         </div>
@@ -135,18 +134,28 @@
             <i class="pu_i" style="right: 16%;top: 17px;"></i>
         </div>
         <div class="pop_ul" v-show="mode == 2">
-            <label>章节选择</label>
-            <select id="chapter_id" class="pop_ulipt pop_ulipts" v-model="chapter_id">
-                <option value="">请选择</option>
-                <option v-for="item in chapters" :value="item.chapter_id">{{item.chapter}}</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
+            <div class="pop_ul">
+                <label>章节选择</label>
+                <div class="d_cb_w">
+                <label :for="key" class="d_cb" v-for="(item, key) in chapters">
+                    {{item.chapter}}
+                    <input :id="key" type="checkbox" :value="item.chapter_id" v-model="chapter_id"> <span></span>
+                </label>
+              </div>
+            </div>
         </div>
         <div class="pop_ul">
             <label>出题难度</label>
             <select class="pop_ulipt pop_ulipts" v-model="diff">
                 <option value="">随机</option>
                 <option v-for="item in diffs" :value="item.key">{{item.value}}</option>
+            </select>
+            <i class="pu_i" style="right: 16%;top: 17px;"></i>
+        </div>
+        <div class="pop_ul">
+            <label>出题数量</label>
+            <select class="pop_ulipt pop_ulipts" v-model="qcount">
+                <option v-for="item in qcounts" :value="item.key">{{item.value}}</option>
             </select>
             <i class="pu_i" style="right: 16%;top: 17px;"></i>
         </div>
@@ -186,6 +195,8 @@
 
 <script>
 
+
+import store from '@/store'
 //应该把采集信息切出去
 export default {
     name: 'CheckList',
@@ -210,28 +221,33 @@ export default {
             pharse_id: 2,//出题范围是否显示
             subjects: [],
             years: [],
+            books: [],
             chapters: [],
-            item: 1,//出题范围
+            textbook_id: '',//出题范围
             mode: 1,//出题方式
-            chapter_id: '',
+            chapter_id: [],
             diff: '',//难度
             diffs: [
                 {key: 1, value: '简单'},
                 {key: 2, value: '一般'},
                 {key: 3, value: '较难'},
             ],
+            qcount: 20,
+            qcounts: [
+                {key: 5, value: '5道'},
+                {key: 10, value: '10道'},
+                {key: 15, value: '15道'},
+                {key: 20, value: '20道'},
+            ],
         }
     },
-    created() {
+    activated() {
         let userinfo = localStorage.getItem("userinfo")
         if (userinfo) {
             let users = JSON.parse(decodeURIComponent(window.atob(userinfo)))
             this.usergroup_id = users.usergroup_id
             this.qrcode = users.qrcode
         }
-        
-    },
-    activated() {
         if (!this.$route.meta.isBack) {
             this.getReports()
             this.getSubjects()
@@ -239,7 +255,8 @@ export default {
         this.$route.meta.isBack = false
     },
     beforeRouteEnter (to, from, next) {
-        if (from.name == 'CheckReport' || from.name == 'CheckQuestions')
+        //解决测评后，列表不刷新的问题
+        if ((from.name == 'CheckReport' || from.name == 'CheckQuestions') && store.state.evo_status != 1)
             to.meta.isBack = true
         next()
     },
@@ -253,13 +270,14 @@ export default {
                 (item.year_id == value) && (pharse_id = item.pharse_id)
             }
             this.pharse_id = pharse_id
-            
-            this.getChapters()
+            this.textbook_id = ''
+            //this.getChapters()
         },
         subject_id() {
-            this.getChapters()
+            this.textbook_id = ''
+            //this.getChapters()
         },
-        item() {
+        textbook_id() {
             this.getChapters()
         },
     },
@@ -292,11 +310,12 @@ export default {
             this.$http.post('/getSubjects').then(res=>{
                 this.years = res.data.years
                 this.subjects = res.data.subjects
+                this.books = res.data.books
             }).catch(res=>{})
         },
         getChapters() {
-            if (this.year_id && this.subject_id)
-            this.$http.post('/getChapters', {year_id: this.year_id, subject_id: this.subject_id, item: this.item}).then(res=>{
+            if (this.subject_id && this.textbook_id)
+            this.$http.post('/getChapters', {subject_id: this.subject_id, textbook_id: this.textbook_id}).then(res=>{
                 this.chapters = res.data
             }).catch(res=>{})
         },
@@ -368,6 +387,11 @@ export default {
                     return
                 }
 
+                if (!this.textbook_id) {
+                    this.$func.tips('请选择教材', 'textbook_id')
+                    return
+                }
+
                 if (this.mode == 2 && !this.chapter_id) {
                     this.$func.tips('请选择章节', 'chapter_id')
                     return
@@ -387,7 +411,7 @@ export default {
                 sex: this.sex,
                 age: this.age
             }
-
+            
             this.$http.post('/addCheckUser', data).then(res=>{
                 layer.close(this.index)
                 this.$func.success(res.msg)
@@ -398,10 +422,11 @@ export default {
                         'year_id': this.year_id, 
                         'subject_id': this.subject_id, 
                         'subject': this.subject,
-                        'item': this.item,
+                        'textbook_id': this.textbook_id,
                         'mode': this.mode,
                         'chapter_id': this.chapter_id,
                         'diff': this.diff,
+                        'qcount': this.qcount,
                     }})
                 else
                     this.$router.push({name: 'SubPaper', params: {'uid': res.data.uid, 'username': res.data.username, 'from': 'EVO', type: this.type}})

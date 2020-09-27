@@ -62,10 +62,11 @@ export default {
         this.year_id = this.$route.params.year_id
         this.subject_id = this.$route.params.subject_id
         this.subject = this.$route.params.subject
-        this.item = this.$route.params.item
+        this.textbook_id = this.$route.params.textbook_id
         this.mode = this.$route.params.mode
         this.chapter_id = this.$route.params.chapter_id
         this.diff = this.$route.params.diff
+        this.qcount = this.$route.params.qcount
 
         this.getPaper()
 
@@ -76,10 +77,11 @@ export default {
             let data = {
                 year_id: this.year_id, 
                 subject_id: this.subject_id,
-                item: this.item,
+                textbook_id: this.textbook_id,
                 mode: this.mode,
                 chapter_id: this.chapter_id,
                 diff: this.diff,
+                qcount: this.qcount,
             }
 
             this.$http.post('/getOnline', data).then(res=>{

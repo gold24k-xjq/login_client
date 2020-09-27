@@ -88,7 +88,8 @@
                         <div class="rpt_ulrdcc" v-show="item.pdfshow" style="width: 120px">
                             <a href="javascript:;" @click="getQuestionPdf(item)"><button class="rpt_ulrbtnrr" style="margin-left: 21px">打印错题</button></a>
                             <a href="javascript:;" @click="getPdf(item, 2)"><button class="rpt_ulrbtnrr" style="margin-left: 21px">打印报告</button></a>
-							<a href="javascript:;" @click="getPdf(item, 7)"><button class="rpt_ulrbtnrr" style="margin-left: 21px">学习手册</button></a>
+                            <a href="javascript:;" v-if="item.correct == 100"><button class="rpt_ulrbtnrr disabled" style="margin-left: 21px">学习手册</button></a>
+							<a href="javascript:;" @click="getPdf(item, 7)" v-else><button class="rpt_ulrbtnrr" style="margin-left: 21px">学习手册</button></a>
                         </div>
                     </div>
                 </div>

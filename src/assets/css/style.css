@@ -2692,3 +2692,52 @@ i,sub,sup{
 	color: #1aa97b;
 	padding: 7px 1.25rem;
 }
+.d_cb{
+	position: relative;
+	cursor: pointer;
+	-moz-user-select: none;
+	text-align: left !important;
+	margin-left: 10px;
+/* 	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden; */
+	width: auto !important;
+	padding-left: 25px;
+	display: block !important;
+}
+.d_cb input[type=checkbox]{
+    position: absolute;
+    left: -9999px;
+}
+.d_cb span {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    outline: 0;
+    transform: translateY(-50%);
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+.d_cb input[type=checkbox]:checked+span{
+    border-color: #1aa97b;
+	background-color: #1aa97b;
+}
+.d_cb input[type=checkbox]+span:after{
+    position: absolute;
+    content: "\2713";
+    top: -5px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+	color: #fff;
+}
+.d_cb input[type=checkbox]:checked+span:after{
+    opacity: 1;
+}
+.d_cb_w{
+	width: 321px;
+}
