@@ -7,11 +7,14 @@
                 <li v-if="usergroup_id != 43">
                     <router-link :to="{name: 'TaskList'}"><span class="at" :class="{'on': 2 == $route.meta.index}">学情报告</span></router-link>
                 </li>
+                <li v-if="usergroup_id != 43">
+                    <router-link :to="{name: 'Record'}"><span class="at" :class="{'on': 3 == $route.meta.index}">学生档案</span></router-link>
+                </li>
                 <li>
                     <router-link :to="{name: 'CheckList'}"><span class="at" :class="{'on': 1 == $route.meta.index}">入学测评</span></router-link>
                 </li>
                 <li v-if="usergroup_id != 42 && usergroup_id != 43">
-                    <a href="http://zujuan.zn1v1.com"><span class="at">校本教辅</span></a>
+                    <a href="http://zujuan.zn1v1.com"><span class="at">组卷备课</span></a>
                 </li>
                 <li v-if="usergroup_id == 40">
                     <a href="http://system.zn1v1.com"><span class="at">设置</span></a>

@@ -1,7 +1,7 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-//import { stringifyQuery, parseQuery } from "../utils/query";//刷新参数丢失，去掉了，npm也删除了
+import { stringifyQuery, parseQuery } from "../utils/query";//刷新参数丢失，去掉了，npm也删除了
 import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
@@ -26,6 +26,14 @@ const routes = [
         component: () => import('../views/Evaluation/CheckList.vue')
     },
     {
+        path: '/AddUser',
+        name: 'AddUser',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Evaluation/AddUser.vue')
+    },
+    {
         path: '/UserList',
         name: 'UserList',
         meta: {
@@ -45,7 +53,7 @@ const routes = [
         path: '/SubPaper',
         name: 'SubPaper',
         meta: {
-            index: 1,
+            index: 0,
         },
         component: () => import('../views/Evaluation/SubPaper.vue')
     },
@@ -107,6 +115,16 @@ const routes = [
         },
         component: () => import('../views/Task/Center.vue')
     },
+    {
+        path: '/Record',
+        name: 'Record',
+        meta: {
+            index: 3,
+            keepAlive: true,
+            isBack : false,
+        },
+        component: () => import('../views/Task/Record.vue')
+    },
 ]
 
 
@@ -121,8 +139,8 @@ const router = new VueRouter({
     mode: 'history',
     base: process.env.BASE_URL,
     scrollBehavior,
-    //stringifyQuery: stringifyQuery,
-    //parseQuery: parseQuery,
+    stringifyQuery: stringifyQuery,
+    parseQuery: parseQuery,
     routes,
     scrollBehavior (to, from, savedPosition) {
         if (to.hash) {

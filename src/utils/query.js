@@ -36,16 +36,16 @@ export const stringifyQuery = obj => {
                 if (val2 === null) {
                     result.push(encode(key))
                 } else {
-                    result.push(encode(key) + '=' + encrypt(encode(val2)))
+                    result.push(encode(key) + '=' + encode(val2))
                 }
             })
             return result.join('&')
         }
 
-        return encode(key) + '=' + encrypt(encode(val))
+        return encode(key) + '=' + encode(val)
     }).filter(x => x.length > 0).join('&') : null
 
-    return res ? `?${res}` : ''
+    return res ? process.env.NODE_ENV == 'production' ? `?${encrypt(res)}` : `?${res}` : ''
 }
 
 /**
@@ -64,13 +64,14 @@ export const parseQuery = query => {
     }
 
     // 解密
-    //query = decrypt(query);
+
+    query = process.env.NODE_ENV == 'production' ? decrypt(query) : query;
     
     query.split('&').forEach(param => {
         const parts = param.replace(/\+/g, ' ').split('=')
         const key = decode(parts.shift())
         const val = parts.length > 0
-            ? decrypt(decode(parts.join('=')))
+            ? decode(parts.join('='))
             : null
 
         if (res[key] === undefined) {

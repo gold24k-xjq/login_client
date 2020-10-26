@@ -115,6 +115,7 @@ export default {
                 username: this.username,
                 tempcode: '',
                 name: this.subject + '在线测评',
+                textbook_id: this.textbook_id,
                 subject_id: this.subject_id,
                 subject: this.subject,
                 uid: this.uid,

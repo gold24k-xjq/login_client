@@ -9,19 +9,19 @@
             </div>
             <ul class="home_ul">
                 <li>
-                    <a @click="addUser(1)" href="javascript:;">
+                    <router-link :to="{name: 'AddUser', query: {type: 1}}" href="javascript:;">
                         <img src="../../assets/images/rn_02.png" />
-                    </a>
+                    </router-link>
                 </li>
                 <li>
-                    <a @click="addUser(2)" href="javascript:;">
+                    <router-link :to="{name: 'AddUser', query: {type: 2}}" href="javascript:;">
                         <img src="../../assets/images/rn_01.png" />
-                    </a>
+                    </router-link>
                 </li>
                 <li>
-                    <a @click="addUser(3)" href="javascript:;">
+                    <router-link :to="{name: 'AddUser', query: {type: 3}}" href="javascript:;">
                         <img src="../../assets/images/rn_03.png" />
-                    </a>
+                    </router-link>
                 </li>
                  <li>
                     <a @click="showCode" href="javascript:;">
@@ -67,7 +67,7 @@
                     <div class="rpt_ulltmm">
 
                         <div class="rpt_ullt">
-                            <span class="rpt_ulltm">{{item.name}}</span>
+                            <span class="rpt_ulltm">{{item.name}} - {{item.teacher_name}}</span>
                             <span class="rpt_ulltr">{{item.addtime}}</span>
                         </div>
                         <div class="rpt_ullb">
@@ -82,6 +82,7 @@
                         <a href="javascript:;" @click="getQuestionPdf(item)"><button class="rpt_ulrbtnrr">导出题目</button></a>
                         <router-link :to="{name: 'CheckReport', query: {id: item.id}}"><button class="rpt_ulrbtnr">查看报告</button></router-link>
                         <a href="javascript:;" @click="getPdf(item)"><button class="rpt_ulrbtnrr">打印报告</button></a>
+                        <!-- <a href="javascript:;" @click="$refs.child.pdfOption(item, 1)"><button class="rpt_ulrbtnrr">打印报告</button></a> -->
                     </div>
                    
                 </li>
@@ -93,101 +94,11 @@
     </div>
 </div>
 
-<div class="pop_up" id="add" v-show="show">
-
-    <p class="pop_upt">入学测评采集信息</p>
-    <div class="pop_ul">
-        <label>姓名</label>
-        <input id="username" type="text" class="pop_ulipt" placeholder="请输入姓名" v-model="username" required />
-    </div>
-    <div class="pop_ul">
-        <label>年级</label>
-        <select id="year_id" class="pop_ulipt pop_ulipts" v-model="year_id" >
-            <option value="">请选择</option>
-            <option v-for="(item, key) in years" :value="item.year_id">{{item.year_name}}</option>
-        </select>
-        <i class="pu_i" style="right: 16%;top: 17px;"></i>
-    </div>
-    <div v-show="type == 3">
-        <div class="pop_ul">
-            <label>科目</label>
-            <select id="subject_id" class="pop_ulipt pop_ulipts" v-model="subject_id" @change="getSubject">
-                <option value="">请选择</option>
-                <option :value="item.subject_id" v-for="item in subjects" v-show="item.year_id == year_id">{{item.subject_name}}</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
-        </div>
-        <div class="pop_ul">
-            <label>教材</label>
-            <select id="textbook_id" class="pop_ulipt pop_ulipts" v-model="textbook_id">
-                <option value="">请选择</option>
-                <option :value="item.textbook_id" v-for="item in books" v-show="item.year_id == year_id && item.subject_id == subject_id">{{item.textbook_name}}</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
-        </div>
-        <div class="pop_ul">
-            <label>出题方式</label>
-            <select class="pop_ulipt pop_ulipts" v-model="mode">
-                <option value="1">随机出题</option>
-                <option value="2">章节出题</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
-        </div>
-        <div class="pop_ul" v-show="mode == 2">
-            <div class="pop_ul">
-                <label>章节选择</label>
-                <div class="d_cb_w">
-                <label :for="key" class="d_cb" v-for="(item, key) in chapters">
-                    {{item.chapter}}
-                    <input :id="key" type="checkbox" :value="item.chapter_id" v-model="chapter_id"> <span></span>
-                </label>
-              </div>
-            </div>
-        </div>
-        <div class="pop_ul">
-            <label>出题难度</label>
-            <select class="pop_ulipt pop_ulipts" v-model="diff">
-                <option value="">随机</option>
-                <option v-for="item in diffs" :value="item.key">{{item.value}}</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
-        </div>
-        <div class="pop_ul">
-            <label>出题数量</label>
-            <select class="pop_ulipt pop_ulipts" v-model="qcount">
-                <option v-for="item in qcounts" :value="item.key">{{item.value}}</option>
-            </select>
-            <i class="pu_i" style="right: 16%;top: 17px;"></i>
-        </div>
-    </div>
-    <div class="pop_ul">
-        <label>性别</label>
-        <div class="ai_labint">
-            <input id="item1" type="radio" name="item" v-model="sex" value="1" checked>
-            <label for="item1"></label>
-            <span>男</span>
-        </div>
-        <div class="ai_labint" id="sex">
-            <input id="item2" type="radio" name="item" v-model="sex" value="2">
-            <label for="item2"></label>
-            <span>女</span>
-        </div>
-    </div>
-    <div class="pop_ul">
-        <label>年龄</label>
-        <input class="pop_ulipt" type="number" v-model="age" placeholder="请输入年龄" min="1" max="10" maxlength="10" />
-    </div>
-    <div class="pop_ul">
-        <label>手机号</label>
-        <input id="phone" class="pop_ulipt" type="number" v-model="phone" placeholder="请输入手机号" />
-    </div>
-    <button class="pop_up_btn" @click="submit">确定</button>
-
-</div>
-
 <div v-show="qshow" id="qrcode">
     <img :src="qrcode" class="layui_img">
 </div>
+
+<PdfOptions ref="child" from="1"></PdfOptions>
 
 <!-- END -->
 </div>
@@ -197,49 +108,23 @@
 
 
 import store from '@/store'
-//应该把采集信息切出去
+import PdfOptions from '@/components/PdfOptions.vue'
 export default {
     name: 'CheckList',
     data() {
         return {
             usergroup_id: '',
-            username: '',
-            year_id: '',
-            subject_id: '',
-            sex: '',
-            age: '',
-            phone: '',
-            show: false,
             qshow: false,
             qrcode: '',
             reports: [],
-            type: 0,//区分来源123
             count: 0,//一共多少，用于判断分页是否显示
             limit: 0,//每页多少
             from: '',//来源筛选
             field: '',//搜索
-            pharse_id: 2,//出题范围是否显示
-            subjects: [],
-            years: [],
-            books: [],
-            chapters: [],
-            textbook_id: '',//出题范围
-            mode: 1,//出题方式
-            chapter_id: [],
-            diff: '',//难度
-            diffs: [
-                {key: 1, value: '简单'},
-                {key: 2, value: '一般'},
-                {key: 3, value: '较难'},
-            ],
-            qcount: 20,
-            qcounts: [
-                {key: 5, value: '5道'},
-                {key: 10, value: '10道'},
-                {key: 15, value: '15道'},
-                {key: 20, value: '20道'},
-            ],
         }
+    },
+    components: {
+        PdfOptions,
     },
     activated() {
         let userinfo = localStorage.getItem("userinfo")
@@ -250,7 +135,6 @@ export default {
         }
         if (!this.$route.meta.isBack) {
             this.getReports()
-            this.getSubjects()
         }
         this.$route.meta.isBack = false
     },
@@ -263,22 +147,6 @@ export default {
     watch: {
         from() {
             this.getReports()
-        },
-        year_id(value) {
-            let pharse_id = ''
-            for(let item of this.years) {
-                (item.year_id == value) && (pharse_id = item.pharse_id)
-            }
-            this.pharse_id = pharse_id
-            this.textbook_id = ''
-            //this.getChapters()
-        },
-        subject_id() {
-            this.textbook_id = ''
-            //this.getChapters()
-        },
-        textbook_id() {
-            this.getChapters()
         },
     },
     methods: {
@@ -306,19 +174,6 @@ export default {
                 })
             }).catch(res=>{})
         },
-        getSubjects() {
-            this.$http.post('/getSubjects').then(res=>{
-                this.years = res.data.years
-                this.subjects = res.data.subjects
-                this.books = res.data.books
-            }).catch(res=>{})
-        },
-        getChapters() {
-            if (this.subject_id && this.textbook_id)
-            this.$http.post('/getChapters', {subject_id: this.subject_id, textbook_id: this.textbook_id}).then(res=>{
-                this.chapters = res.data
-            }).catch(res=>{})
-        },
         search() {
             if (this.$func.isPhone(this.field)) {
                 this.sphone = this.field
@@ -337,21 +192,9 @@ export default {
             let data = {id: item.id, school_id: item.school_id, name: item.name, username: item.username, from: 3}
             this.$func.getPdf(data)
         },
-        getSubject(e) {
-            this.subject = e.target.options[e.target.selectedIndex].text
-        },
         setSex(sex) {
             sex = sex || 1
             return require('../../assets/images/sex_'+sex+'.png')
-        },
-        addUser(type = 1) {
-            let height = "600px"
-            this.show = true
-            this.type = type
-            type == 3 && (height = "900px")
-            this.$func.open("add", "入学测评采集信息", ["900px", height]).then((index, dom)=> {
-                this.index = index
-            })
         },
         showCode() {
             if (!this.qrcode) {
@@ -362,78 +205,6 @@ export default {
             this.$func.open("qrcode", "请扫描二维码", ["800px", "500px"]).then((index, dom)=> {
                 this.index = index
             })
-        },
-        submit() {
-  
-            if (!this.username) {
-                this.$func.tips('请输入姓名', 'username')
-                return
-            }
-            
-            if (!this.year_id) {
-                this.$func.tips('请选择年级', 'year_id')
-                return
-            }
-
-            if (!this.sex) {
-                this.$func.tips('请选择性别', 'sex')
-                return
-            }
-
-            if (this.type == 3) {
-
-                if (!this.subject_id) {
-                    this.$func.tips('请选择科目', 'subject_id')
-                    return
-                }
-
-                if (!this.textbook_id) {
-                    this.$func.tips('请选择教材', 'textbook_id')
-                    return
-                }
-
-                if (this.mode == 2 && !this.chapter_id) {
-                    this.$func.tips('请选择章节', 'chapter_id')
-                    return
-                }
-
-            }
-
-            if (this.phone && !this.$func.isPhone(this.phone)) {
-                this.$func.tips('格式错误', 'phone')
-                return
-            }
-
-            let data = {
-                username: this.username, 
-                year_id: this.year_id,
-                phone: this.phone,
-                sex: this.sex,
-                age: this.age
-            }
-            
-            this.$http.post('/addCheckUser', data).then(res=>{
-                layer.close(this.index)
-                this.$func.success(res.msg)
-                if (this.type == 3)
-                    this.$router.push({name: 'Online', params: {
-                        'uid': res.data.uid, 
-                        'username': res.data.username, 
-                        'year_id': this.year_id, 
-                        'subject_id': this.subject_id, 
-                        'subject': this.subject,
-                        'textbook_id': this.textbook_id,
-                        'mode': this.mode,
-                        'chapter_id': this.chapter_id,
-                        'diff': this.diff,
-                        'qcount': this.qcount,
-                    }})
-                else
-                    this.$router.push({name: 'SubPaper', params: {'uid': res.data.uid, 'username': res.data.username, 'from': 'EVO', type: this.type}})
-            }).catch(res=>{
-                layer.close(this.index)
-            })
-
         },
     },
     mounted() {

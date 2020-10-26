@@ -29,7 +29,7 @@
                 </div>
                 <ul class="cr_talist_uiu">
                     <li v-for="(answer, key) in item.answers">
-                        <span class="wa_list_g wa_list_gg"></span>
+                        <!-- <span class="wa_list_g wa_list_gg"></span> -->
                         <p>{{key}}、<div class="cr_talist_uiuf" v-html="answer"></div></p>
                     </li>
                 </ul>

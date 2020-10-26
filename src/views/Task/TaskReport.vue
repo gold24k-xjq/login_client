@@ -37,7 +37,7 @@
             </ul>
         </div>
         <Knowledges :knowledges="report.knowledge_info"></Knowledges>
-        <QuestionInfo :questions="report.questionlist"></QuestionInfo>
+        <QuestionInfo :questions="report.questionlist" from="2"></QuestionInfo>
         <div class="cr_bg">
             <div class="cr_tit">多次对比折线图</div>
             <!-- <div class="wait_time">
@@ -111,6 +111,10 @@ export default {
 
             }).catch(res=>{})
 
+        },
+        getPdf() {
+            let data = {practice_id: this.report.practice_id, uid: this.report.uid, grade_id: this.grade_id, school_id: this.report.school_id, name: this.report.name, username: this.report.username, is_short: 1, from: 4}
+            this.$func.getPdf(data)
         },
         chart5(c) {
             let myChart = echarts.init(this.$refs.charts5)

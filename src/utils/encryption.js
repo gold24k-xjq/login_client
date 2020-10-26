@@ -1,8 +1,8 @@
 /*
- * 默认在html已经引入了  crypto-js.js  文件
  * 加密 解密
  */
 import CryptoJS from 'crypto-js'
+
 const baseCryptoCode = "base64:drrMTn+bZQWAsZwPkKPI5RVeZovgiVR6/mN/9r/kekA="; // 私钥自己指定
 
 const getKeyHex = cryptoCode => CryptoJS.enc.Latin1.parse(cryptoCode || baseCryptoCode);
@@ -23,11 +23,12 @@ export const getEncrypt = (key, cryptoCode) => {
     } catch (e) {
         console.warn(e);
     }
-    return CryptoJS.AES.encrypt(key, keyHex, {
+    /*return CryptoJS.AES.encrypt(key, keyHex, {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.ZeroPadding,
         iv: ivHex
-    }).toString();
+    }).toString();*/
+    return CryptoJS.AES.encrypt(key, baseCryptoCode);
 }
 
 export const getEncryptToBase64 = (key, cryptoCode) => {
@@ -44,13 +45,15 @@ export const getEncryptToBase64 = (key, cryptoCode) => {
 export const getDecrypt = data => {
     let keyHex = getKeyHex();
     let ivHex = getIvHex();
-    let decrypted = CryptoJS.AES.decrypt({
+    //加偏移量报utf不完整，去掉了
+    /*let decrypted = CryptoJS.AES.decrypt({
         ciphertext: CryptoJS.enc.Base64.parse(data)
     }, keyHex, {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.ZeroPadding,
         iv: ivHex
-    }).toString(CryptoJS.enc.Utf8);
+    }).toString(CryptoJS.enc.Utf8);*/
+    let decrypted = CryptoJS.AES.decrypt(data, baseCryptoCode).toString(CryptoJS.enc.Utf8);
     try {
         decrypted = JSON.parse(decrypted);
     } catch (e) {

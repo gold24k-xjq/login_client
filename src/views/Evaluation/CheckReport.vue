@@ -5,7 +5,7 @@
     <div class="w1200 pt">
         <back></back>
         <div class="cr_bg zh_liptoh" >
-            <p class="cr_bgtit fl">{{report.name}}<i class="cr_bgtiti" @click="getPdf"></i></p>
+            <p class="cr_bgtit fl">{{report.name}}<!-- <i class="cr_bgtiti" @click="getPdf"></i> --></p>
             <img class="cr_bgtitimg fr" :src="report.path">
         </div>
         <div class="cr_bg">

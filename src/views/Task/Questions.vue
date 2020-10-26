@@ -13,7 +13,7 @@
 
 <script>
 
-
+import CryptoJS from 'crypto-js'
 import Paper from '@/components/Paper.vue'
 export default {
     name: 'Questions',

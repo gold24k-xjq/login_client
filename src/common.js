@@ -117,7 +117,6 @@ const getPdf = (data) => {
         layer.closeAll('loading');
         downloads(res.data)
     }).catch(res=>{
-        console.log(res)
         access = true
         layer.closeAll('loading');
     })

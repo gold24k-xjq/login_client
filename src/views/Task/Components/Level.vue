@@ -37,7 +37,7 @@
             </tr> 
             <tbody>
                 <tr v-for="item in students">
-                    <td class="cr_t_tit">{{item.name}}</td> 
+                    <td class="cr_t_tit"><router-link class="cr_t_tit" :to="{name: 'TaskReport', query: {'pid': practice_id, 'uid': item.uid, 'gid': grade_id}}">{{item.name}}</router-link></td> 
                     <td class="cr_t_img">{{item.grade_name}}</td> 
                     <td>
                         <span class="cr_pro">

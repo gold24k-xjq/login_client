@@ -16,11 +16,29 @@
         </div>
          <p class="fr center_name">{{username}}</p>
     </div>
-  
+    
+    <div class="w1200 overflow cont_bg" v-show="current == KNOW">
+        <ul class="jz_t_ul fl">
+            <li v-for="(item, index) in k_title" :class="{'on': k_cur == index}" @click="k_cur = index">{{item.name}}（{{item.count}}）</li>
+        </ul>
+    </div>
+
     <div class="w1200 cont_bg" style="padding-bottom: 20px;">
-        <ul class="int_ul" style="margin-left: 1.25rem;" v-if="current > 2">
+        <div class="cr_bg" v-if="current == STUDY">
+            <table class="set_tmtab port_mt0">
+                <tbody>
+                    <tr v-for="(item, index) in reports">
+                        <td class="port_mt0_tdl"><i>{{index + 1}}.</i>{{item.practice_name}}<span>{{item.addtime}}</span></td>
+                        <td>
+                            <button :class="item.study_path ? 'port_btn_y' : 'port_btn_g'" @click="$refs.child.pdfOption(item)">{{item.study_path ? '已导出' : '导出打印'}}</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="int_ul" style="margin-left: 1.25rem;" v-else-if="current == WRONG || current == STRENG">
             <li v-for="item in weeks" style="margin-top: 15px;">
-                <p class="int_tbt"><i></i>{{item.subject_name}}个性题集</p>
+                <p class="int_tbt"><i></i>{{item.subject_name}}{{wrong_name}}</p>
                 <p class="int_tbt1">{{$func.formatDate(item.start)}} 至 {{$func.formatDate(item.end)}}</p>
                 <p class="int_tbt2">发布时间：<span>{{item.addtime}}</span></p>
                 <button class="int_tbtn" @click="getDownload(item)">查看题集<i></i></button>
@@ -49,28 +67,52 @@
             </div>
         </div>
     </div>
+    <div id="page" v-show="count > limit && current == 5"></div>
 </div>
+<!-- 导出打印弹窗 -->
+<PdfOptions ref="child"></PdfOptions>
 <!-- END -->
 </div>
 </template>
 
 <script>
 
-
-
+const KNOW = 1
+const WRONG = 2
+const STRENG = 3
+import PdfOptions from '@/components/PdfOptions.vue'
 export default {
     name: 'Center',
     data() {
         return {
+            show: false,
             access: true,
             knowledges: [],
             weeks: [],
             subjects: [],
+            reports: [],
             username: '',
             subject_id: '',
+            count: 0,//一共多少，用于判断分页是否显示
+            limit: 0,//每页多少
             current: 0,
-            title: ['未强化', '已强化', '强化中', '错题集', '强化题集'],
+            k_cur: 0,//未强化已强化
+            title: ['学习手册', '未掌握知识点', '周错题集', '周强化题集'],
+            //k_title: ['未强化', '已强化', '强化中'],
+            k_title: [
+                {name: '未强化', count: 0},
+                {name: '已强化', count: 0},
+                {name: '强化中', count: 0},
+            ],
+            wrong_name: '错题集',
+            STUDY: 0,
+            KNOW: 1,
+            WRONG: 2,
+            STRENG: 3,
         }
+    },
+    components: {
+        PdfOptions,
     },
     created() {
         this.grade_id = this.$route.query.grade_id
@@ -87,19 +129,58 @@ export default {
                 if (newName) {
                     this.getKnowledges()
                     this.getWeeks()
+                    this.getTaskList()
                 }
             },
             immediate: true
         },
         current(value) {
+            value == this.KNOW && this.allk && (this.knowledges = this.allk[this.k_cur])
+            value == this.WRONG && (this.wrong_name = '错题集')
+            value == this.STRENG && (this.wrong_name = '个性题集')
+        },
+        k_cur(value) {
             this.allk && (this.knowledges = this.allk[value])
         },
     },
     methods: {
+        getTaskList(page = 1) {
+            let data = {page: page}
+            data.from = 1//需要十条分页
+            data.type = 1//只查作业报告
+            data.uid = this.uid
+            data.grade_id = this.grade_id
+            data.subject_id = this.subject_id
+            this.$http.post('/getTaskList', data).then(res=>{
+                let data = res.data.data
+                this.reports = data
+                this.count = res.data.count
+                this.limit = res.data.limit
+                let _this = this
+                layui.laypage.render({
+                    elem: 'page',
+                    count: res.data.count,
+                    limit: res.data.limit,
+                    curr: page,
+                    jump: function(obj, first){
+                        if (!first) {
+                            _this.getTaskList(obj.curr)
+                        }
+                    }
+                })
+            }).catch(res=>{})
+        },
         getKnowledges() {
             this.$http.post('/getKnowledges', {grade_id: this.grade_id, uid: this.uid, subject_id: this.subject_id}).then(res=>{
                 this.allk = res.data
-                this.knowledges = res.data[this.current]
+                for(let index in this.k_title) {
+                    let count = 0
+                    res.data[index].forEach((item) => {
+                        count += item.count
+                    })
+                    this.k_title[index].count = count
+                }
+                this.knowledges = res.data[this.k_cur]
             }).catch(res=>{})
         },
         getWeeks() {
@@ -115,7 +196,7 @@ export default {
             }).catch(res=>{})
         },
         setStreng(item) {
-            if (this.current == 1) {//已强化
+            if (this.k_cur == 1) {//已强化
                 this.$func.error('无需强化')
                 return
             }
@@ -130,7 +211,7 @@ export default {
             this.$func.setStreng('/knowledgeStreng', data)
         },
         setStrengReturnCode(item) {
-            if (this.current == 1) {//已强化
+            if (this.k_cur == 1) {//已强化
                 this.$func.error('无需强化')
                 return
             }
@@ -163,10 +244,10 @@ export default {
             this.switchs(e.target.selectedIndex)
         },
         getDownload(item) {
-            if (this.current == 3) {//错题集
+            if (this.current == this.WRONG) {//错题集
                 let data = {uid: this.uid, subject_id: this.subject_id, start: item.start, end: item.end, username: this.username, from: 5}
                 this.$func.getPdf(data)
-            } else if (this.current == 4) {//强化题集
+            } else if (this.current == this.STRENG) {//强化题集
                 if (item.path) {
                     this.$func.downloads(item)
                 } else {

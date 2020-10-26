@@ -1,6 +1,7 @@
 <template>
 <div class="cr_bg">
-    <div class="cr_tit">题目掌握情况</div>
+    <div class="cr_tit">题目作答情况<div class="fr" style="color: #1aa97b;cursor: pointer;" v-if="from == 2" @click="$parent.getPdf">查看学生作答</div></div>
+    
     <table class="cr_table_t" v-for="i in num">
         <tr>
             <th>题号</th>
@@ -35,6 +36,10 @@ export default {
         questions: {
             type: [Array, Object]
         },
+        from: {
+            type: [String, Number],
+            default: 1
+        }
     },
     watch: {
         questions() {
