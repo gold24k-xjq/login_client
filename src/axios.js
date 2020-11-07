@@ -19,9 +19,9 @@ instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlenco
 //http request 拦截器
 instance.interceptors.request.use(
 	config => {
-
+        
         //加密
-        if (config.data && process.env.NODE_ENV == 'production') {
+        if (config.data && process.env.NODE_ENV == 'production' && !config.data.noencrypt) {
             config.headers.Params = crypto.encrypt(config.data)
             config.data = ''
         }

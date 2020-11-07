@@ -113,7 +113,8 @@ export default {
 
         },
         getPdf() {
-            let data = {practice_id: this.report.practice_id, uid: this.report.uid, grade_id: this.grade_id, school_id: this.report.school_id, name: this.report.name, username: this.report.username, is_short: 1, from: 4}
+            //let data = {practice_id: this.report.practice_id, uid: this.report.uid, grade_id: this.grade_id, school_id: this.report.school_id, name: this.report.name, username: this.report.username, is_short: 1, from: 4}
+            let data = {practice_id: this.report.practice_id, uid: this.report.uid, grade_id: this.grade_id, name: this.report.name, username: this.report.username, from: 9}
             this.$func.getPdf(data)
         },
         chart5(c) {

@@ -46,6 +46,7 @@ const open = (id, title = '信息', area = ['700px', '450px']) => {
             maxmin: true,
             content: dom,
             success: function(layero, index){ 
+                console.log(index)
                 resolve(index, layero)
             },
             cancel: function(index, layero){ 
@@ -189,6 +190,38 @@ const setMath = () => {
 
 
 
+const getLetters = (data) => {
+
+    let letters = []
+    data.forEach((item) => {
+        letters.push(item.letter)
+    })
+    letters = [...new Set(letters)].sort()
+    return letters
+
+}
+
+
+
+var clone = function(obj){
+    var construct = Object.prototype.toString.call(obj).slice(8,-1);
+    var res;
+    if(construct === 'Array'){
+        res = [];
+    }else if(construct === 'Object'){
+        res = {}
+    }
+    for(var item in obj){
+        if(typeof obj[item] === 'object'){
+            res[item] = clone(obj[item]);
+        }else{
+            res[item] = obj[item];
+        }
+    }
+    return res;
+}
+
+
 /*window.MathJax.Hub.Config({
     showProcessingMessages: false, //关闭js加载过程信息
     messageStyle: "none", //不显示信息
@@ -222,5 +255,7 @@ export default {
     getPdf,
     setStreng,
     setMath,
+    getLetters,
+    clone,
 
 }

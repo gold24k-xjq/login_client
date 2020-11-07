@@ -7,7 +7,7 @@
         <ul>
             <li v-for="item in pdfs" @click="item.checked = !item.checked">
                 <div :class="[{'on': item.checked}, myclass(item.index)]"></div>
-                <p>{{item.name}}</p>
+                <p><i :class="[{'at': item.checked}]"></i>{{item.name}}</p>
             </li>
         </ul>
     </div>

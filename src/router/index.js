@@ -53,9 +53,17 @@ const routes = [
         path: '/SubPaper',
         name: 'SubPaper',
         meta: {
-            index: 0,
+            index: 1,
         },
         component: () => import('../views/Evaluation/SubPaper.vue')
+    },
+    {
+        path: '/SubTask',
+        name: 'SubTask',
+        meta: {
+            index: 2,
+        },
+        component: () => import('../views/Task/SubTask.vue')
     },
     {
         path: '/CheckQuestions',

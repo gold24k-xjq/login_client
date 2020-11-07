@@ -7,14 +7,13 @@
             <div class="subanw_t">
                 <div class="subanw_tn">
                     <span>请输入模板ID</span> 
-                    <!-- <input type="text" placeholder="请输入模板号" class="subanw_input" v-model="tempcode" @keyup.enter="towhere">  -->
-                    <MyInput placeholder="请输入模板号" :data="papers" v-model="tempcode" @enter="towhere"></MyInput>
+                    <MyInput placeholder="请输入模板号" :data="papers" v-model="tempcode" @enter="getTaskPaper"></MyInput>
                 </div>
-                <div class="subanw_tn" v-if="from == 'TASK' && task_type == 1">
+                <div class="subanw_tn" v-if="task_type == 1">
                     <span>请输入学生姓名或学号</span>
-                    <MyInput placeholder="请输入学生姓名或学号" :data="users" v-model="checked_name" @enter="towhere"></MyInput>
+                    <MyInput placeholder="请输入学生姓名或学号" :data="users" v-model="checked_name" @enter="getTaskPaper"></MyInput>
                 </div>
-                <div class="subanw_tn" v-else-if="from == 'TASK' && task_type == 2">
+                <div class="subanw_tn" v-if="task_type != 1">
                     <span>请选择班级：</span>
                     <div class="subanw_tn_se">
                         <select class="pop_ulipt" v-model="gid">
@@ -24,7 +23,17 @@
                         <i class="pu_i"></i>
                     </div>
                 </div>
-                <button class="rpt_ulrbtnl sub_rpt_btn" @click="towhere">确定</button>
+                <div class="subanw_tn" v-if="task_type != 1">
+                    <span>请选择类型：</span>
+                    <div class="subanw_tn_se">
+                        <select class="pop_ulipt" v-model="task_type">
+                            <option value="2">按人</option>
+                            <option value="3">按题</option>
+                        </select>
+                        <i class="pu_i"></i>
+                    </div>
+                </div>
+                <button class="rpt_ulrbtnl sub_rpt_btn" @click="getTaskPaper">确定</button>
             </div>
         </div>
         <div class="cr_bg fr subnlr d_subnlr">
@@ -36,14 +45,14 @@
         </div>
     </div>
 </div>
-<div class="content" v-else>
+<div class="content" v-else-if="task_type != 3">
     <div class="w1200">
         <div class="cr_bg overflow">
             <div class="fl">
                 <span class="rpt_ulltm">{{taskname}}</span> 
                 <p>
                     <span class="subaid">模板ID：{{tempcode}}</span>
-                    <span class="subaid" v-if="from == 'TASK'">学号/姓名：{{code}}</span>
+                    <span class="subaid">学号/姓名：{{code}}</span>
                 </p>
             </div>
             <div class="fr">
@@ -93,19 +102,88 @@
                     </div> 
                     <textarea class="saw_list_bt" :ref="item.orders|parse" :id="item.orders|parse" maxlength="50" style="display: none;"></textarea>
                 </div>
-                <div class="saw_list_bb saw_list_bbg" v-if="from == 'TASK' && item.paths.length" @click="showView(item.orders)">查看作答</div> 
+                <div class="saw_list_bb saw_list_bbg" v-if="item.paths.length" @click="showView(item.orders)">查看作答</div> 
                 <div :ref="item.orders" v-viewer>
                     <div v-for="item in item.paths">
                         <img :src="item" style="display: none" />
                     </div>
                 </div>
             </div>
-            <button class="sub_btn" @click="subwhere">提交</button>
+            <button class="sub_btn" @click="submitTask">提交</button>
         </div>
         <div class="cr_bg">
             <ul class="subp_ul_name">
                 <li v-for="item in grade_users" :class="{'on': item.is_done || item.uid == uid}" @click="switchUsers(item)">{{item.username}}</li>
             </ul>
+        </div>
+    </div>
+</div>
+<div class="content" v-else>
+    <div class="w1200">
+        <div class="cr_bg overflow">
+            <div class="fl">
+                <span class="rpt_ulltm">{{taskname}}</span> 
+                <p>
+                    <span class="subaid">模板ID：{{tempcode}}</span>
+                    <span class="subaid">学号/姓名：{{code}}</span>
+                </p>
+            </div>
+            <!-- <div class="fr">
+                <MyCropper v-show="imgshow" :imgshow.sync="imgshow" :answers="answers" :uid="uid" :temp_code="tempcode" @getPaths="getPaths"></MyCropper>
+                <button class="sub_tp_btn" @click="imgshow = true">上传作答</button>
+            </div> -->
+        </div>
+        <div class="cr_bg">
+            <p class="cr_bp">
+                请根据实际作答情况标记，选择题填写你的答案，填空题和主观题参照答案自行批阅对错或半对，提交后不可修改！
+            </p>
+            <div class="saw_list" v-for="(item, index) in answers">
+                <div class="saw_list_df">
+                    <div class="ib_ln">{{item.orders}}.</div> 
+                    <div class="ib_lcf">
+                        <i class="">参考答案:</i> 
+                        <i class="saw_lg" v-html="item.answer"></i>
+                    </div>
+                </div>
+                <div v-for="user in users">
+                    <div class="saw_list_df">
+                        <div class="ib_lname">{{user.username}}</div>
+                        <div class="ib_lc" v-if="item.subjective == 1">
+                            <span :class="{'on': item.myanswer.indexOf(option) >= 0}" v-for="option in koptions" @click="saveAnswer(item.orders, option, item.ismultichoice)">{{option}}</span> 
+                        </div>
+                        <div class="ib_lc ib_lcn" v-else-if="item.subjective == 2">
+                            <span :class="{'on': item.myanswer == index+1}" v-for="(option, index) in zoptions" @click="saveAnswer(item.orders, index+1)" v-html="option"></span> 
+                            <button class="sub_tp_btn" @click="imgshow = true">上传作答</button>
+                        </div>
+                    </div>
+                    <div class="saw_list_b" v-show="item.subjective == 2 && item.myanswer && item.myanswer != 1 && is_access == 1">
+                        <div class="saw_list_bb" v-if="item.knowledges.length > 1">
+                            <span>未掌握知识点：</span>
+                            <div class="saw_list_bb_df  saw_list_bb_df_ml">
+                                <div v-for="(knowledge, index1) in item.knowledges" class="know_ul_div" :class="{'know_ul_div_g': !knowledge.checked}" @click="checked(item, knowledge.id)">{{knowledge.name}}<!-- <i>×</i> --></div>
+                            </div>
+                        </div>
+                        <div class="saw_list_bb">
+                            <span>错因：</span>
+                            <div class="saw_list_bb_df">
+                                <label :for="index + '-w' + index1" :name="item.orders|why" class="d_cb" v-for="(reason, index1) in reasons"> 
+                                    {{reason}}
+                                    <input :id="index + '-w' + index1" :ref="item.orders|why" type="checkbox" :value="index1" @change="input_change(item.orders)"> 
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div> 
+                        <textarea class="saw_list_bt" :ref="item.orders|parse" :id="item.orders|parse" maxlength="50" style="display: none;"></textarea>
+                    </div>
+                </div>
+                <div class="saw_list_bb saw_list_bbg" v-if="item.paths.length" @click="showView(item.orders)">查看作答</div> 
+                <div :ref="item.orders" v-viewer>
+                    <div v-for="item in item.paths">
+                        <img :src="item" style="display: none" />
+                    </div>
+                </div>
+            </div>
+            <button class="sub_btn" @click="submitTask">提交</button>
         </div>
     </div>
 </div>
@@ -134,7 +212,6 @@ export default {
             koptions: ['A', 'B', 'C', 'D'],
             zoptions: ['√', '×', '<i class="ib_hr">√</i>'],
             access: true,
-            from: 'EVO',
             checked_name: '',//联想input输入值
             length: 3,//强化题数。普通提交作业时，默认是3
             is_access: 0,//是否弹出标记知识点
@@ -154,17 +231,11 @@ export default {
     created() {
 
         let uid = this.$route.params.uid//可能是评测的uid，也可能是作业的uid
-        let username = this.$route.params.username
-        let type = this.$route.params.type
-        let from = this.$route.params.from
         let tempcode = this.$route.params.temp_code
         let length = this.$route.params.length
         let task_type = this.$route.params.task_type
 
         uid && (this.uid = uid)
-        username && (this.username = username)
-        type && (this.type = type)
-        this.from = from
         this.task_type = task_type
         if (tempcode) {//传过来tempcode，代表来自学生列表
             this.tempcode = tempcode
@@ -172,10 +243,10 @@ export default {
             this.is_post = true
             this.getTaskPaper()
         }
-        if (from == 'TASK') {//作业获取学生列表
-            this.getTaskUsers()
-            this.getPaperList()
-        }
+
+        this.getTaskUsers()
+        this.getPaperList()
+        
         if (task_type == 2) {
             this.getGrades()
         }
@@ -196,8 +267,10 @@ export default {
         getTaskUsers() {
             this.$http.post('/getTaskUsers').then(res=>{
                 let data = res.data
+                let user_data = []
                 for (let item of data) {
                     item.checked = false
+                    user_data[item.uid] = []
                 }
                 this.users = data
             }).catch(res=>{})
@@ -210,15 +283,6 @@ export default {
                 }
                 this.papers = data
             }).catch(res=>{})
-        },
-        towhere() {
-            this.checked_name && (this.code = this.checked_name)
-            if (this.from == 'EVO') this.getPaper()
-            else this.getTaskPaper()
-        },
-        subwhere() {
-            if (this.from == 'EVO') this.submit()
-            else this.submitTask()
         },
         getGrades() {
             this.$http.post('/getTaskGrades').then(res=>{
@@ -252,6 +316,8 @@ export default {
         },
         getTaskPaper() {
 
+            this.checked_name && (this.code = this.checked_name)
+
             if (!this.tempcode) {
                 this.$func.error('请输入模板号')
                 return
@@ -262,7 +328,7 @@ export default {
                 return
             }
 
-            if (this.task_type == 2 && !this.gid) {
+            if (this.task_type != 1 && !this.gid) {
                 this.$func.error('请选择班级')
                 return
             }
@@ -309,36 +375,6 @@ export default {
 
             }).catch(res=>{})
 
-        },
-        getPaper() {
-
-            if (!this.tempcode) {
-                this.$func.error('请输入模板号')
-                return
-            }
-
-            this.$http.post('/getPaper', {'tempcode': this.tempcode}).then(res=>{
-
-                this.is_post = true
-                this.taskname = res.data.testname
-                this.subject_id = res.data.subject_id
-                this.subject = res.data.subject
-                this.answers = res.data.answers
-
-                let AnsArr = []
-
-                for (var i = 0; i < res.data.answers.length; i++) {
-                    AnsArr.push('')
-                }
-
-                this.myanswers = AnsArr
-
-                this.$nextTick( () => {
-                    this.$func.setMath()
-                })
-
-            }).catch(res=>{})
-            
         },
         input_change(orders) {//textarea是否显示
             let check_ids = []
@@ -452,77 +488,33 @@ export default {
             this.myanswers = [].concat(this.origin_myans)
             this.answers = this.$func.clone(this.origin_ans)
         },
-        submit() {
-  
-            if (!this.access) return
-
-            let data = {
-                myanswers: this.myanswers,
-                tempcode: this.tempcode,
-                username: this.username,
-                name: this.taskname,
-                subject_id: this.subject_id,
-                subject: this.subject,
-                uid: this.uid,
-                type: this.type,//区分教本校辅和练习册
-                from: 1,
-            }
-
-            this.access = false
-
-            this.$http.post('/savePaper', data).then(res=>{
-                this.$func.success(res.msg)
-                this.$router.push({name: 'CheckReport', query: {'id': res.data}})
-            }).catch(res=>{})
-
-        },
         saveAnswer(order, current, ismultichoice = 0) {
                 
             let answers = this.answers
             
             for(let index of answers){
-
                 if(order == index.orders) {
-
                     if (ismultichoice == 1) {
-
                         if (index.myanswer) {
-                            
                             if (index.myanswer.indexOf(current) != -1) 
-                                
                                 index.myanswer = index.myanswer.replace(current, '')
-
                             else 
-                                
                                 index.myanswer = index.myanswer+current
-
-
                         } else 
-
                             index.myanswer = current
-
                     }else
-
                         index.myanswer = current
-
                 }
-
             }
 
             this.answers = answers
 
             if (ismultichoice == 1) {
-
                 let curAnswer = this.myanswers[order-1]
-
                 if (curAnswer.indexOf(current) != -1) 
-                    
                     current = curAnswer.replace(current, '')
-
-                else 
-                    
+                else  
                     current = curAnswer+current
-
             }
 
             this.myanswers.splice(order-1, 1, current)

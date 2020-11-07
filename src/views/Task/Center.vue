@@ -21,6 +21,9 @@
         <ul class="jz_t_ul fl">
             <li v-for="(item, index) in k_title" :class="{'on': k_cur == index}" @click="k_cur = index">{{item.name}}（{{item.count}}）</li>
         </ul>
+        <div class="jz_t_ul_r fr">
+            <div class="jz_t_ul_r_d" v-for="item in orders" :class="{'on': order_cur == item.index}" @click="order_cur = item.index">{{item.name}}</div>
+        </div>
     </div>
 
     <div class="w1200 cont_bg" style="padding-bottom: 20px;">
@@ -28,7 +31,7 @@
             <table class="set_tmtab port_mt0">
                 <tbody>
                     <tr v-for="(item, index) in reports">
-                        <td class="port_mt0_tdl"><i>{{index + 1}}.</i>{{item.practice_name}}<span>{{item.addtime}}</span></td>
+                        <td class="port_mt0_tdl"><i>{{item.orders}}.</i>{{item.practice_name}}<span>{{item.addtime}}</span></td>
                         <td>
                             <button :class="item.study_path ? 'port_btn_y' : 'port_btn_g'" @click="$refs.child.pdfOption(item)">{{item.study_path ? '已导出' : '导出打印'}}</button>
                         </td>
@@ -67,7 +70,7 @@
             </div>
         </div>
     </div>
-    <div id="page" v-show="count > limit && current == 5"></div>
+    <div id="page" v-show="count > limit && current == STUDY"></div>
 </div>
 <!-- 导出打印弹窗 -->
 <PdfOptions ref="child"></PdfOptions>
@@ -77,9 +80,7 @@
 
 <script>
 
-const KNOW = 1
-const WRONG = 2
-const STRENG = 3
+
 import PdfOptions from '@/components/PdfOptions.vue'
 export default {
     name: 'Center',
@@ -98,12 +99,16 @@ export default {
             current: 0,
             k_cur: 0,//未强化已强化
             title: ['学习手册', '未掌握知识点', '周错题集', '周强化题集'],
-            //k_title: ['未强化', '已强化', '强化中'],
             k_title: [
                 {name: '未强化', count: 0},
                 {name: '已强化', count: 0},
                 {name: '强化中', count: 0},
             ],
+            orders: [
+                {index: 1, name: '按章节排序'},
+                {index: 2, name: '按时间排序'},
+            ],
+            order_cur: 1,
             wrong_name: '错题集',
             STUDY: 0,
             KNOW: 1,
@@ -142,6 +147,9 @@ export default {
         k_cur(value) {
             this.allk && (this.knowledges = this.allk[value])
         },
+        order_cur(value) {
+            this.getKnowledges()
+        },
     },
     methods: {
         getTaskList(page = 1) {
@@ -171,7 +179,7 @@ export default {
             }).catch(res=>{})
         },
         getKnowledges() {
-            this.$http.post('/getKnowledges', {grade_id: this.grade_id, uid: this.uid, subject_id: this.subject_id}).then(res=>{
+            this.$http.post('/getKnowledges', {grade_id: this.grade_id, uid: this.uid, subject_id: this.subject_id, order_type: this.order_cur}).then(res=>{
                 this.allk = res.data
                 for(let index in this.k_title) {
                     let count = 0
@@ -194,6 +202,10 @@ export default {
                 if (!this.grade_id)
                     this.switchs(0)
             }).catch(res=>{})
+        },
+        doorder(field) {
+            console.log(222)
+            this.knowledges = this.$func.sortBykey(this.allk[this.k_cur], field, true)
         },
         setStreng(item) {
             if (this.k_cur == 1) {//已强化

@@ -21,6 +21,13 @@
                     </select>      
                     <i class="pu_i"></i>             
                 </div>
+                <div class="record_se">
+                    <select class="pop_ulipt pop_ulipts" v-model="grade_id">
+                        <option value="" selected>请选择班级</option>
+                        <option v-for="item in grades" :value="item.grade_id">{{item.grade_name}}</option>
+                    </select>      
+                    <i class="pu_i"></i>             
+                </div>
                 <MyInput placeholder="授课教师" :data="sk_users" v-model="teacher_name" @enter="getUsers"></MyInput>
                 <MyInput placeholder="管理教师" :data="gl_users" v-model="teacher_name" @enter="getUsers"></MyInput>
             </div>
@@ -32,25 +39,34 @@
 					<th>学生姓名</th> 
 					<th>性别</th> 
 					<th>账号</th> 
-					<!-- <th>教师</th>  -->
+					<th>科目</th>
 					<th>开始时间</th> 
 					<th>结束时间</th>
-					<th>操作</th>
+					<th>学习手册</th>
+					<th>未掌握知识点</th>
+					<th>周题错集</th>
+					<th>周强化题集</th>
 				</tr>
 				<tbody>
-					<tr v-for="(item, index) in users">
-						<td>{{index + 1}}</td>
-						<td>{{item.username}}</td>
-						<td>{{item.sex}}</td>
-						<td>{{item.code}}</td>
-						<!-- <td>{{item.teacher_name}}</td> -->
+					<tr v-for="(item, index) in users" :class="{'set_tmtab_trbg':item.orders%2==0}">
+						<td v-if="!item.noassign" :rowspan="item.sub_count">{{item.orders}}</td>
+						<td v-if="!item.noassign" :rowspan="item.sub_count">{{item.username}}</td>
+						<td v-if="!item.noassign" :rowspan="item.sub_count">{{item.sex}}</td>
+						<td v-if="!item.noassign" :rowspan="item.sub_count">{{item.code}}</td>
+						<td>{{item.subject_name}}</td>
 						<td>{{item.addtime}}</td>
 						<td>{{item.endtime}}</td>
-						<td class="set_tmtab_ltd">
-							<router-link class="set_tmrb_b" :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 0}}"><i class="set_tmrb1"></i>学习手册（{{item.task_count}}）</router-link>
-                            <router-link class="set_tmrb_b" :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 1}}"><i class="set_tmrb2"></i>未掌握知识点（{{item.knowledge_count}}）</router-link>
-							<router-link class="set_tmrb_b" :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 2}}"><i class="set_tmrb3"></i>周错题集（{{item.wrong_count}}）</router-link>
-							<router-link class="set_tmrb_b" :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 3}}"><i class="set_tmrb4"></i>周强化题集（{{item.wrong_count}}）</router-link>
+						<td class="set_tmtab_ltdg">
+							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 0}}">{{item.task_count}}</router-link>
+						</td>
+						<td class="set_tmtab_ltdg">
+							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 1}}">{{item.knowledge_count}}</router-link>
+						</td>
+						<td class="set_tmtab_ltdg">
+							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 2}}">{{item.wrong_count}}</router-link>
+						</td>
+						<td class="set_tmtab_ltdg">
+							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 3}}">{{item.wrong_count}}</router-link>
 						</td>
 					</tr>
 				</tbody>
@@ -76,6 +92,8 @@ export default {
             username: '',
             years: [],
             year_id: '',
+            grades: [],
+            grade_id: '',
             sk_users: [],
             //sk_username: '',//授课教师，应该合并
             gl_users: [],
@@ -111,6 +129,9 @@ export default {
         year_id() {
             this.getUsers()
         },
+        grade_id() {
+            this.getUsers()
+        },
     },
     methods: {
     	getUsers(page = 1) {
@@ -118,6 +139,7 @@ export default {
             this.username && (data.username = this.username)
             this.letter && (data.letter = this.letter)
             this.year_id && (data.year_id = this.year_id)
+            this.grade_id && (data.grade_id = this.grade_id)
             this.teacher_name && (data.teacher_name = this.teacher_name)
             this.$http.post('/getRecordList', data).then(res=>{
                 this.users = res.data.data
@@ -140,6 +162,7 @@ export default {
         getYears() {
             this.$http.post('/getYears').then(res=>{
                 this.years = res.data.years
+                this.grades = res.data.grades
                 let sk_users = res.data.sk_users
                 for (let item of sk_users) {
                     item.checked = false

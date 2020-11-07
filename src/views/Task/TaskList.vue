@@ -7,7 +7,7 @@
             <ul class="jz_t_ul fl">
                 <li v-for="(item, index) in types" :class="{'on': curentComponent == item.component}" @click="curentComponent = item.component">{{item.name}}</li>
             </ul>
-            <router-link :to="{name: 'SubPaper', params: {from: 'TASK'}}" class="fr jz_t_ulbtn">上传新作业</router-link>
+            <a href="javascript:;" @click="jump" class="fr jz_t_ulbtn">上传新作业</a>
         </div>
     
     <div class="w1200">
@@ -34,14 +34,20 @@ export default {
             curentComponent: 'StudentList',
         }
     },
-    beforeRouteEnter (to, from, next) {
+    beforeRouteEnter(to, from, next) {
         if (from.name == 'GradeReport' || from.name == 'TaskReport' || from.name == 'Questions' || from.name == 'Center')
             to.meta.isBack = true
         next()
     },
-    components:{
+    components: {
         ClassList,
         StudentList
+    },
+    methods: {
+        jump() {
+            let task_type = this.curentComponent == 'ClassList' ? 2 : 1
+            this.$router.push({name: 'SubTask', params: {task_type: task_type}})
+        },
     },
 }
 

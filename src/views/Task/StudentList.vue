@@ -5,7 +5,7 @@
         <div class="port_t">
             <div class="port_t_l" :class="{'on': letter == 0}" @click="letter = 0">全部学生</div>
             <div class="port_t_m">
-                <span v-for="(item, index) in letters" :class="{'on': letter == item.name}" @click="letter = item.name">{{item.name}}</span>
+                <span v-for="(item, index) in letters" :class="{'on': letter == item}" @click="letter = item">{{item}}</span>
             </div>
         </div>
     </div>
@@ -169,7 +169,7 @@ export default {
             this.getSubjects()
             this.getTaskUsers()
             this.getTaskList()
-            this.setLetters()
+            //this.setLetters()
         }
         this.$route.meta.isBack = false
     },
@@ -203,6 +203,7 @@ export default {
         getTaskUsers() {
             this.$http.post('/getTaskUsers').then(res=>{
                 this.users = this.allusers = res.data
+                this.letters = this.$func.getLetters(res.data)
             }).catch(res=>{})
         },
         getTaskList(page = 1) {
@@ -296,6 +297,7 @@ export default {
         },
         checkKnowledge() {
             let knowledge_ids = this.knowledge_ids.join()
+            this.closePop()
             if (this.behav == 1)
                 this.doDownload(this.cur_item, 10, knowledge_ids)
             else
