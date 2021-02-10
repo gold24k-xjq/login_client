@@ -46,9 +46,9 @@
                     已交：<span class="green">{{origin.count}}</span>人
                 </td>
                 <td width="80%" class="txtl">
-                    <a href="">
-                        <p class="tjtj_name statistical" v-for="item in report.done">{{item}}</p>
-                    </a>                        
+                    <router-link :to="{name: 'TaskReport', query: {'pid': practice_id, 'uid': item.uid, 'gid': grade_id}}" v-for="item in users.done" :key="item.uid">
+                        <p class="tjtj_name statistical">{{item.name}}</p>
+                    </router-link>                        
                 </td>
             </tr>
             <tr class="czb_tr">
@@ -56,7 +56,7 @@
                     未交：<span class="red">{{origin.undone}}</span>人
                 </td>
                 <td width="80%" class="txtl">
-                    <p class="tjtj_name" v-for="item in report.undone">{{item}}</p>                     
+                    <p class="tjtj_name" v-for="item in users.undone">{{item.name}}</p>                     
                 </td>
             </tr>
         </table>
@@ -72,7 +72,9 @@ export default {
     name: 'Statement',
     data() {
         return {
-            report: []
+            practice_id: '',
+            grade_id: '',
+            users: []
         }
     },
     props: {
@@ -83,12 +85,14 @@ export default {
     created() {
         let practice_id = this.$route.query.practice_id
         let grade_id = this.$route.query.grade_id
-        this.getReport(practice_id, grade_id)
+        this.practice_id = practice_id
+        this.grade_id = grade_id
+        this.getUsers()
     },
     methods: {
-        getReport(practice_id, grade_id) {
-            this.$http.post('/getGradeReportState', {practice_id: practice_id, grade_id: grade_id}).then(res=>{
-                this.report = res.data
+        getUsers() {
+            this.$http.post('/getGradeReportState', {practice_id: this.practice_id, grade_id: this.grade_id, subject_id: this.origin.subject_id}).then(res=>{
+                this.users = res.data
             }).catch(res=>{})
         },
     },

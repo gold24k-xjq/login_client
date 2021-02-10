@@ -127,7 +127,7 @@ export default {
 
             this.$http.post('/savePaper', data).then(res=>{
                 this.$func.success(res.msg)
-                this.$router.push({name: 'CheckReport', query: {'id': res.data}})
+                this.$router.replace({name: 'OnlineReport', query: {'id': res.data}})
             }).catch(res=>{})
 
         },

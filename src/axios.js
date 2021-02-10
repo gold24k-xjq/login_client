@@ -1,27 +1,27 @@
 
 import axios from 'axios'
-import globals from './global'
 import router from './router'
 import common from './common'
+import store from './store'
 import crypto from './utils/crypto'
 
 var instance = axios.create({ timeout: 1000 * 10 })
 var key = 'base64:drrMTn+bZQWAsZwPkKPI5RVeZovgiVR6/mN/9r/kekA='
 
-// 相对路径设置
-if(process.env.NODE_ENV == 'development')
-    instance.defaults.baseURL = 'http://localhost/blog/public/api'//
-else if(process.env.NODE_ENV == 'production')
-    instance.defaults.baseURL = globals.host
+instance.defaults.baseURL = process.env.VUE_APP_BASE_URL
 
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 //http request 拦截器
 instance.interceptors.request.use(
 	config => {
-        
+
+        config.data = {
+            ...config.data,
+            school_area_id: store.state.area_id
+        }
         //加密
-        if (config.data && process.env.NODE_ENV == 'production' && !config.data.noencrypt) {
+        if (config.data && process.env.NODE_ENV != 'development' && !config.data.noencrypt) {
             config.headers.Params = crypto.encrypt(config.data)
             config.data = ''
         }
@@ -44,14 +44,14 @@ instance.interceptors.request.use(
 //http response 拦截器
 instance.interceptors.response.use(
   	response => {
-
+        
         if (response.headers.authorization) {
             localStorage.setItem('token', response.headers.authorization)
             common.setCookie('token', response.headers.authorization)
         }
         
         //解密
-        if(process.env.NODE_ENV == 'production')
+        if (process.env.NODE_ENV != 'development')
             response.data.data = crypto.decrypt(response.data.data)
         
 
@@ -62,7 +62,7 @@ instance.interceptors.response.use(
             goLogin(response.data.msg)
             return Promise.reject(response)
 
-        }else {
+        } else {
 	    	response.data.msg && layer.msg(response.data.msg, {anim: 6})
 	    	return Promise.reject(response)
 	    }

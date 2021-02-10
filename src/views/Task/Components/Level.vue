@@ -41,11 +41,11 @@
                     <td class="cr_t_img">{{item.grade_name}}</td> 
                     <td>
                         <span class="cr_pro">
-                            <span class="cr_prola" :style="{width: item.correct+'%'}"></span>
+                            <span :class="item.correct|capitalize" :style="{width: item.correct+'%'}"></span>
                             <i>{{item.correct}}%</i>
                         </span>
                     </td> 
-                    <td class="cr_proa">{{item.level}}</td> 
+                    <td :class="item.correct|capitalize1">{{item.level}}</td> 
                 </tr>
             </tbody>
         </table>
@@ -206,5 +206,29 @@ export default {
             myChart.setOption(option);
         },
     },
+	filters: {
+        capitalize: function (value) {
+    	    if(value>=90){
+    			return 'cr_prola'
+    		}else if(value>=80 && value<90){
+    			return 'cr_prolb'
+    		}else if(value>=60 && value<80){
+    			return 'cr_prolc'
+    		}else{
+    			return 'cr_prold'
+    		}
+        },
+        capitalize1: function (value) {
+            if(value>=90){
+                return 'cr_proa'
+	  		}else if(value>=80 && value<90){
+	  			return 'cr_prob'
+	  		}else if(value>=60 && value<80){
+	  			return 'cr_proc'
+	  		}else{
+	  			return 'cr_prod'
+	  		}
+        }
+	}
 }
 </script>

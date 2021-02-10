@@ -11,17 +11,32 @@
                     <router-link :to="{name: 'Record'}"><span class="at" :class="{'on': 3 == $route.meta.index}">学生档案</span></router-link>
                 </li>
                 <li>
-                    <router-link :to="{name: 'CheckList'}"><span class="at" :class="{'on': 1 == $route.meta.index}">入学测评</span></router-link>
+                    <router-link :to="{name: 'CheckList'}"><span class="at" :class="{'on': 1 == $route.meta.index}">招生工具</span></router-link>
+                </li>
+                <!-- <li>
+                    <router-link :to="{name: 'PaperList'}"><span class="at" :class="{'on': 5 == $route.meta.index}">试卷分析</span></router-link>
+                </li> -->
+                <li v-if="usergroup_id != 42 && usergroup_id != 43">
+                    <a :href="env.VUE_APP_CLASS_URL"><span class="at">智能教案</span></a>
                 </li>
                 <li v-if="usergroup_id != 42 && usergroup_id != 43">
-                    <a href="http://zujuan.zn1v1.com"><span class="at">组卷备课</span></a>
+                    <a :href="env.VUE_APP_PAPER_URL"><span class="at">题库组卷</span></a>
                 </li>
                 <li v-if="usergroup_id == 40">
-                    <a href="http://system.zn1v1.com"><span class="at">设置</span></a>
+                    <a :href="env.VUE_APP_SETTING_URL"><span class="at">设置</span></a>
                 </li>
             </ul>
             <div class="header_rf fl" @click="out = !out">你好，{{username}}<i class="h_rf_xl"></i></div>
-            <div class="header_out" v-show="out" @click="outLogin"><i class="h_out"></i>退出登录</div>
+            <!-- <div class="header_out" v-show="out" @click="outLogin"><i class="h_out"></i>退出登录</div> -->
+            <ul class="header_out" v-show="out">
+                <li v-if="is_boss == 1">
+                    <div @click="cut = !cut"><i class="h_cut"></i>切换校区</div>
+                    <div class="h_cut_pop" v-show="cut">
+                        <div class="line" :class="{'on': item.id == $store.state.area_id}" v-for="item in areas" @click="checkArea(item.id)">{{item.name}}</div>
+                    </div>
+                </li>
+                <li @click="outLogin"><i class="h_out"></i>退出登录</li>
+            </ul>
         </div>
     </div>
 </div>
@@ -38,11 +53,15 @@ export default {
             usergroup_id: '',
             logo: require('../assets/images/logo_01.png'),
             islogin: false,
-            out:false,
+            out: false,
+            cut: false,
+            env: {},
+            areas: [],
+            is_boss: '',
         }
     },
     created() {
-
+        this.env = process.env
         let token = localStorage.getItem("token")//监听变化
         let userinfo = localStorage.getItem("userinfo")
         token && (this.islogin = true)
@@ -51,9 +70,9 @@ export default {
             this.username = users.username
             this.usergroup_id = users.usergroup_id
             users.logo && (this.logo = users.logo)
+            this.is_boss = users.is_boss
+            this.getSchoolAreas()
         }
-        //userinfo && (this.username = JSON.parse(decodeURIComponent(window.atob(userinfo))).username)
-
     },
     methods: {
         outLogin() {
@@ -62,6 +81,16 @@ export default {
                 this.$func.success(res.msg)
                 this.$router.replace('/')
             }).catch(res=>{})
+        },
+        getSchoolAreas() {
+            this.$http.post('/getSchoolAreas').then(res=>{
+                this.areas = res.data
+            }).catch(res=>{})
+        },
+        checkArea(id) {
+            this.$store.commit("SETAREA", id)
+            this.cut = false
+            this.out = false
         },
         goIndex() {
             this.$router.push('/CheckList')

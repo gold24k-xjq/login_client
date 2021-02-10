@@ -162,7 +162,7 @@ export default {
             }).catch(res=>{})
         },
         getReport() {
-            this.$http.post('/getGradeUsers', {grade_id: this.grade_id}).then(res=>{
+            this.$http.post('/getGradeUsers', {subject_id: this.subject_id, grade_id: this.grade_id}).then(res=>{
                 this.current_uid = res.data[0].uid
                 this.current_username = res.data[0].username
                 this.users = res.data

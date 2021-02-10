@@ -98,7 +98,8 @@ export default {
             limit: 0,//每页多少
             current: 0,
             k_cur: 0,//未强化已强化
-            title: ['学习手册', '未掌握知识点', '周错题集', '周强化题集'],
+            //title: ['提分手册', '未掌握知识点', '周错题集', '周强化题集'],
+            title: ['提分手册', '未掌握知识点'],
             k_title: [
                 {name: '未强化', count: 0},
                 {name: '已强化', count: 0},
@@ -155,7 +156,7 @@ export default {
         getTaskList(page = 1) {
             let data = {page: page}
             data.from = 1//需要十条分页
-            data.type = 1//只查作业报告
+            //data.type = 1//只查作业报告
             data.uid = this.uid
             data.grade_id = this.grade_id
             data.subject_id = this.subject_id
@@ -241,7 +242,7 @@ export default {
             this.$http.post('/knowledgeStrengReturnCode', data).then(res=>{
                 this.access = true
                 layer.closeAll('loading');
-                this.$router.push({name: 'SubPaper', params: {'temp_code': res.data, 'uid': this.uid, from: 'TASK'}})
+                this.$router.push({name: 'SubTask', params: {'temp_code': res.data, 'uid': this.uid}})
             }).catch(res=>{
                 this.access = true
                 layer.closeAll('loading');

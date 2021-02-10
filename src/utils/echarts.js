@@ -2,8 +2,10 @@
 import echarts from "echarts"
 
 const chart1 = (score, refs) => {
-    let y1 = 3 * score
-    let y2 = Math.round((300 - y1) * 100) / 100
+    /*let y1 = 3 * score
+    let y2 = Math.round((300 - y1) * 100) / 100*/
+    let y1 = score
+    let y2 = 100 - score
     let myChart = echarts.init(refs)
     var option = { 
         tooltip: {

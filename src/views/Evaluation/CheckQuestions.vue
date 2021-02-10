@@ -28,6 +28,11 @@ export default {
     created() {
         let id = this.$route.query.id
         this.getRport(id)
+
+        let _this = this
+        this.page = 0
+        //this.xx = setInterval(_this.xjq, 30000)
+        //this.xjq()
     },
     components: {
         Paper,
@@ -45,6 +50,16 @@ export default {
 
             }).catch(res=>{})
 
+        },
+        xjq() {
+            this.page ++
+            this.$http.post('/test', {page: this.page}).then(res=>{
+                console.log(res.msg)
+            }).catch(res=>{
+                console.log(res.data)
+                /*if (res.data.code == 600)
+                clearInterval(this.xx)*/
+            })
         },
     },
 }

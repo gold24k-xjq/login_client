@@ -45,7 +45,7 @@ export const stringifyQuery = obj => {
         return encode(key) + '=' + encode(val)
     }).filter(x => x.length > 0).join('&') : null
     
-    return res ? process.env.NODE_ENV == 'production' ? `?${encrypt(res)}` : `?${res}` : ''
+    return res ? process.env.NODE_ENV != 'development' ? `?${encrypt(res)}` : `?${res}` : ''
 }
 
 /**
@@ -65,7 +65,7 @@ export const parseQuery = query => {
     
     // 解密
     //参数有others不需要解析，即外面跳转来的
-    query.indexOf('others') === -1 && (query = process.env.NODE_ENV == 'production' ? decrypt(query) : query)
+    query.indexOf('others') === -1 && (query = process.env.NODE_ENV != 'development' ? decrypt(query) : query)
     
     query.split('&').forEach(param => {
         const parts = param.replace(/\+/g, ' ').split('=')

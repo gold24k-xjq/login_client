@@ -65,6 +65,12 @@ export default {
         }
         this.$route.meta.isBack = false
     },
+    watch: {
+        '$store.state.area_id': function (value) {
+            this.getGrades()
+            this.getGradeTasks()
+        }
+    },
     methods: {
         getGrades() {
             this.$http.post('/getTaskGrades').then(res=>{

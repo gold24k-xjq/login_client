@@ -1,7 +1,7 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { stringifyQuery, parseQuery } from "../utils/query";//刷新参数丢失，去掉了，npm也删除了
+import { stringifyQuery, parseQuery } from "../utils/query";
 import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
@@ -82,6 +82,22 @@ const routes = [
         component: () => import('../views/Evaluation/CheckReport.vue')
     },
     {
+        path: '/OnlineReport',
+        name: 'OnlineReport',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Evaluation/OnlineReport.vue')
+    },
+    {
+        path: '/Poster',
+        name: 'Poster',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Evaluation/Poster.vue')
+    },
+    {
         path: '/TaskList',
         name: 'TaskList',
         meta: {
@@ -98,6 +114,14 @@ const routes = [
             index: 2,
         },
         component: () => import('../views/Task/TaskReport.vue')
+    },
+    {
+        path: '/TaskStudy',
+        name: 'TaskStudy',
+        meta: {
+            index: 2,
+        },
+        component: () => import('../views/Task/TaskStudy.vue')
     },
     {
         path: '/Questions',
@@ -132,6 +156,72 @@ const routes = [
             isBack : false,
         },
         component: () => import('../views/Task/Record.vue')
+    },
+    {
+        path: '/PaperList',
+        name: 'PaperList',
+        meta: {
+            index: 1,
+            keepAlive: true,
+            isBack : false,
+        },
+        component: () => import('../views/Paper/PaperList.vue')
+    },
+    {
+        path: '/TestList',
+        name: 'TestList',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/TestList.vue')
+    },
+    {
+        path: '/PaperConfig',
+        name: 'PaperConfig',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/PaperConfig.vue')
+    },
+    {
+        path: '/PaperConfigSimple',
+        name: 'PaperConfigSimple',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/PaperConfigSimple.vue')
+    },
+    {
+        path: '/AddPaperUser',
+        name: 'AddPaperUser',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/AddPaperUser.vue')
+    },
+    {
+        path: '/SubExam',
+        name: 'SubExam',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/SubExam.vue')
+    },
+    {
+        path: '/PaperReport',
+        name: 'PaperReport',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/PaperReport.vue')
+    },
+    {
+        path: '/PaperReportSimple',
+        name: 'PaperReportSimple',
+        meta: {
+            index: 1,
+        },
+        component: () => import('../views/Paper/PaperReportSimple.vue')
     },
 ]
 

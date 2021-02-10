@@ -42,10 +42,12 @@
 					<th>科目</th>
 					<th>开始时间</th> 
 					<th>结束时间</th>
-					<th>学习手册</th>
+					<th>提分手册</th>
 					<th>未掌握知识点</th>
-					<th>周题错集</th>
-					<th>周强化题集</th>
+                    <th>教学方案</th>
+                    <th>我的教案</th>
+					<!-- <th>周题错集</th>
+					<th>周强化题集</th> -->
 				</tr>
 				<tbody>
 					<tr v-for="(item, index) in users" :class="{'set_tmtab_trbg':item.orders%2==0}">
@@ -62,12 +64,18 @@
 						<td class="set_tmtab_ltdg">
 							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 1}}">{{item.knowledge_count}}</router-link>
 						</td>
-						<td class="set_tmtab_ltdg">
+                        <td class="set_tmtab_ltdg">
+                            <a href="http://zujuan.zn1v1.com/MaterialAll">查看</a>
+                        </td>
+                        <td class="set_tmtab_ltdg">
+                            <a :href="getPath(item.uid)">{{item.path_count}}</a>
+                        </td>
+						<!-- <td class="set_tmtab_ltdg">
 							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 2}}">{{item.wrong_count}}</router-link>
 						</td>
 						<td class="set_tmtab_ltdg">
 							<router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.username, current: 3}}">{{item.wrong_count}}</router-link>
-						</td>
+						</td> -->
 					</tr>
 				</tbody>
 			</table>
@@ -132,6 +140,11 @@ export default {
         grade_id() {
             this.getUsers()
         },
+        '$store.state.area_id': function (value) {
+            this.setLetters()
+            this.getUsers()
+            this.getYears()
+        }
     },
     methods: {
     	getUsers(page = 1) {
@@ -191,6 +204,9 @@ export default {
 		    }
 		    this.letters = arr*/
         },
+        getPath(uid) {
+            return "http://zujuan.zn1v1.com/Material?uid=" + uid
+        }
     },
 }
 </script>

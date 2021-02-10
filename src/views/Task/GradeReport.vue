@@ -41,7 +41,7 @@ export default {
                 {name: '知识点详情', component: 'KnowledgeInfo'},
                 {name: '多次对比', component: 'Compare'},
                 {name: '试题讲评', component: 'QuestionComment'},
-                {name: '题集下载', component: 'Streng'},
+                // {name: '题集下载', component: 'Streng'},
                 {name: '提交统计', component: 'Statement'}
             ],
             report: [],

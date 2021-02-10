@@ -80,23 +80,24 @@
                     </div>
                 </div>
                 <div class="rpt_ulr">
-                    <router-link :to="{name: 'TaskReport', query: {'pid': item.practice_id, 'uid': item.uid, 'gid': item.grade_id}}"><button class="rpt_ulrbtnr">查看报告</button></router-link>
+                    <!-- <router-link :to="{name: 'TaskReport', query: {'pid': item.practice_id, 'uid': item.uid, 'gid': item.grade_id}}"><button class="rpt_ulrbtnr">查看报告</button></router-link> -->
+                    <router-link :to="{name: 'TaskStudy', query: {'pid': item.practice_id, 'uid': item.uid, 'gid': item.grade_id}}"><button class="rpt_ulrbtnr">提分手册</button></router-link>
                     <!-- <a href="javascript:;" v-if="item.correct == 100"><button class="rpt_ulrbtnrr disabled">学习手册</button></a>
                     <a href="javascript:;" @click="$refs.child.pdfOption(item)" v-else><button class="rpt_ulrbtnrr">学习手册</button></a> -->
-                    <a href="javascript:;" @click="$refs.child.pdfOption(item)"><button class="rpt_ulrbtnrr">学习手册</button></a>
+                    <!-- <a href="javascript:;" @click="$refs.child.pdfOption(item)"><button class="rpt_ulrbtnr">提分手册</button></a> -->
                     
                     <div class="rpt_ulrdc">
                         <button class="rpt_ulrbtnrr" @click="togglePanel(item)">强化训练<i :class="{'on': item.strshow}"></i></button>
                         <div class="rpt_ulrdcc" v-show="item.strshow">
-                            <div class="d_rpt_ulrdcc">
+                            <!-- <div class="d_rpt_ulrdcc">
                                 <p>每个知识点3道题</p>
                                 <button class="rpt_ulrbtnr" @click="goReport(item, 3)" v-if="item.is_done && item.q_temp">完成强化训练</button>
                                 <button class="rpt_ulrbtnr disabled" v-else-if="item.is_done && !item.q_temp">无需强化训练</button>
                                 <button class="rpt_ulrbtnr rpt_red" @click="getDownload(item, 3)" v-else>打印试题</button>
                                 <a href="javascript:;" @click="goSub(item, 3)"><button class="rpt_ulrbtnrr" :class="{'disabled': item.is_done == 1}">提交答案</button></a>
-                            </div>
+                            </div> -->
                             <div class="d_rpt_ulrdcc">
-                                <p>每个知识点10道题</p>
+                                <p>单个知识点10道题</p>
                                 <button class="rpt_ulrbtnr" @click="goReport(item, 10)" v-if="item.is_done_max && item.q_temp_max">完成强化训练</button>
                                 <button class="rpt_ulrbtnr disabled" v-else-if="item.is_done_max && !item.q_temp_max">无需强化训练</button>
                                 <button class="rpt_ulrbtnr rpt_red" @click="getDownload(item, 10)" v-else>打印试题</button>
@@ -105,14 +106,14 @@
                             <!-- <router-link :to="{name: 'Center', query: {grade_id: item.grade_id, uid: item.uid, subject_id: item.subject_id, username: item.name}}"><button class="rpt_ulrbtnrr" style="margin-bottom: 15px;margin-left: 35px;">单知识点</button></router-link> -->
                         </div>
                     </div>
-                    <router-link :to="{name: 'Questions', query: {'id': item.practice_id, 'uid': item.uid, 'gid': item.grade_id}}"><button class="rpt_ulrbtnr">题目解析</button></router-link>
+                    <!-- <router-link :to="{name: 'Questions', query: {'id': item.practice_id, 'uid': item.uid, 'gid': item.grade_id}}"><button class="rpt_ulrbtnr">题目解析</button></router-link> -->
                 </div>
             </li>
         </ul>
         <div class="nodata" v-else>暂无数据</div>
     </div>
     <div id="page" v-show="count > limit"></div>
-    <PdfOptions ref="child"></PdfOptions>
+    <PdfOptions ref="child" from="7" title="下载学习手册"></PdfOptions>
     <div v-show="ck_show" id="ck">
         <div class="ck_lable">
             <label v-for="(item,index) in knowledges" :for="index" class="d_cb ck_d_cb"> 
@@ -169,7 +170,6 @@ export default {
             this.getSubjects()
             this.getTaskUsers()
             this.getTaskList()
-            //this.setLetters()
         }
         this.$route.meta.isBack = false
     },
@@ -198,9 +198,16 @@ export default {
                 this.setUsers()
             }
         },
+        '$store.state.area_id': function (value) {
+            this.getTaskUsers()
+            this.getTaskList()
+        }
     },
     methods: {
         getTaskUsers() {
+            this.$http.post('/getPaperByChaper', {'chapter_id': 3}).then(res=>{
+                console.log(res)
+            }).catch(res=>{})
             this.$http.post('/getTaskUsers').then(res=>{
                 this.users = this.allusers = res.data
                 this.letters = this.$func.getLetters(res.data)
@@ -269,14 +276,6 @@ export default {
                 this.subjects = res.data
             }).catch(res=>{})
         },
-        setLetters() {
-            let arr = [];
-            for(var i = 65; i < 91; i++){
-                let item = {name: String.fromCharCode(i)}
-                arr.push(item);
-            }
-            this.letters = arr
-        },
         setUsers() {
             this.users = this.allusers.filter( f => this.letter ? f.letter == this.letter : true )
         },
@@ -310,7 +309,7 @@ export default {
                 this.$func.error('强化训练已完成')
             } else {
                 if (temp_code) {
-                    this.$router.push({name: 'SubPaper', params: {'temp_code': temp_code, 'uid': item.uid, from: 'TASK', length: length}})
+                    this.$router.push({name: 'SubTask', params: {'temp_code': temp_code, 'uid': item.uid, length: length, task_type: 1}})
                 } else {
                     if (length == 3) {
                         this.doSub(item, length)
@@ -330,7 +329,7 @@ export default {
             this.$http.post('/setStrengReturnCode', data).then(res=>{
                 this.access = true
                 layer.closeAll('loading');
-                this.$router.push({name: 'SubPaper', params: {'temp_code': res.data, 'uid': item.uid, from: 'TASK', length: length}})
+                this.$router.push({name: 'SubTask', params: {'temp_code': res.data, 'uid': item.uid, length: length, task_type: 1}})
             }).catch(res=>{
                 this.access = true
                 layer.closeAll('loading');

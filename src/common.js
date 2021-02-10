@@ -33,20 +33,37 @@ const load = () => {
 }
 
 
-const open = (id, title = '信息', area = ['700px', '450px']) => {
+const confirm = (msg, btn = ['确定', '取消']) => {
+
+    return new Promise(function(resolve, reject) {
+
+        layer.confirm(msg, {icon: 3, title: '提示', btn: btn}, function(index) {
+            layer.close(index)
+            resolve()
+        }, function() {
+            reject()
+        })
+
+    })
+
+}
+
+
+const open = (id, title, area = ['700px', '450px']) => {
 
     let dom = $('#'+id)
+
+    let tf = title ? true : false
 
     return new Promise(function(resolve, reject) {
         layer.open({
             type: 1,
             title: title,
             area: area,
-            fixed: true,
-            maxmin: true,
+            fixed: tf,
+            maxmin: tf,
             content: dom,
             success: function(layero, index){ 
-                console.log(index)
                 resolve(index, layero)
             },
             cancel: function(index, layero){ 
@@ -61,12 +78,40 @@ const open = (id, title = '信息', area = ['700px', '450px']) => {
     
 }
 
+
+const eject = (id, title, area = ['700px', '450px'], btn = ['确认', '取消']) => {
+
+    let dom = $('#'+id)
+
+    return new Promise(function(resolve, reject) {
+        layer.open({
+            type: 1,
+            title: title,
+            area: area,
+            btn: btn,
+            fixed: true,
+            maxmin: true,
+            content: dom,
+            yes: function(index){ 
+                resolve(index)
+            },
+            end: function(index){ 
+                reject(index)
+            }
+        })
+    })
+    
+}
+
+
 const setCookie = (name, value) => {
+
+    let domain = process.env.VUE_APP_DOMAIN
     
     var exdate = new Date(), expiredays = 14;
     exdate.setDate(exdate.getDate() + expiredays);
     
-    document.cookie = name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toGMTString())+";path=/;domain=zn1v1.com";//zn1v1.com
+    document.cookie = name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toGMTString())+";path=/;domain="+domain;//zn1v1.com
 
 }
 
@@ -222,6 +267,18 @@ var clone = function(obj){
 }
 
 
+
+const string_order = (data) => {
+
+    data = data.split('')
+    data.sort()
+    data = data.join('')
+    return data
+
+}
+
+
+
 /*window.MathJax.Hub.Config({
     showProcessingMessages: false, //关闭js加载过程信息
     messageStyle: "none", //不显示信息
@@ -244,7 +301,9 @@ export default {
     error,
     tips,
     load,
+    confirm,
     open,
+    eject,
     setCookie,
     sortBykey,
     clearCache,
@@ -257,5 +316,6 @@ export default {
     setMath,
     getLetters,
     clone,
+    string_order,
 
 }

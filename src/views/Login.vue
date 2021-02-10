@@ -14,12 +14,12 @@
         <div class="logo_mpt" v-if="!isIE">
     	    <div class="logo_mr">
     			<div class="logo_mrl fl">
-    				<p class="logo_mrlp">初高中智能1对1辅导</p>
+    				<p class="logo_mrlp">个性化教育SaaS平台</p>
     				<img class="logo_mrlimg" src="../assets/images/in_01.png" />
     			</div>
     			<!-- 选择登录身份 -->
     			<div class="logo_mrr logo_mrrch fl" v-if="show == 0">
-    				<div class="logo_mrrtit"><img src="../assets/images/logo_02.png" /></div>
+    				<div class="logo_mrrtit"><!-- <img src="../assets/images/logo_02.png" /> --></div>
     				<div class="logo_mrrline"><p>选择登录身份</p></div>
     				<div class="zh_logo">
     				   	<div class="zh_lipt zh_liptoh">
@@ -176,6 +176,8 @@ export default {
   			this.$http.post('/login', data).then(res=>{
   				this.$func.success(res.msg)
   				localStorage.setItem("userinfo", window.btoa(window.encodeURIComponent(JSON.stringify(res.data))))
+                this.$func.setCookie('userinfo', window.btoa(window.encodeURIComponent(JSON.stringify(res.data))))
+                this.$store.commit("SETAREA", res.data.school_area_id)
                 if (res.data.usergroup_id == 43)
                     this.$router.replace('CheckList')
                 else

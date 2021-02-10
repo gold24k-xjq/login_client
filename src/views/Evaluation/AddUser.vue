@@ -115,9 +115,9 @@ export default {
             chapter_id: [],
             diff: '',//难度
             diffs: [
-                {key: 1, value: '简单'},
-                {key: 2, value: '一般'},
-                {key: 3, value: '较难'},
+                {key: 1, value: '一般'},
+                {key: 2, value: '较难'},
+                // {key: 3, value: '较难'},
             ],
             qcount: 20,
             qcounts: [
@@ -236,7 +236,7 @@ export default {
                         'qcount': this.qcount,
                     }})
                 else
-                    this.$router.push({name: 'SubPaper', params: {'uid': res.data.uid, 'username': res.data.username, 'from': 'EVO', type: this.type}})
+                    this.$router.push({name: 'SubPaper', params: {'uid': res.data.uid, 'username': res.data.username, type: this.type}})
             }).catch(res=>{
                 layer.close(this.index)
             })
